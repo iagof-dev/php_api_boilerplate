@@ -3,49 +3,43 @@ namespace RequestHelper;
 
 class RequestHelper {
 
-    private function executeRequest($method, $url, $headers = [], $data = null) {
-        $ch = curl_init();
-        
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        
-        if (!empty($headers)) {
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        }
-        
-        if ($data !== null) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-        }
-        
-        $response = curl_exec($ch);
-        
-        curl_close($ch);
-        
-        return json_decode($response, true);
+    private $ch;
+
+    public function __construct($url, $isPayment = false)
+    {
+        $this->ch = curl_init($url);
+        curl_setopt_array($this->ch, [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_USERAGENT => $_SERVER['HTTP_USER_AGENT'],
+            CURLOPT_HEADER => [
+                'accept: application/json',
+                'content-type: application/json' 
+            ]
+            ]);
     }
 
-    public function MakeGet($url, $headers = []) {
-        return $this->executeRequest('GET', $url, $headers);
+    public function sendPost($data){
+        curl_setopt($this->ch,CURLOPT_POSTFIELDS, $data);
+
+        $response = curl_exec($this->ch);
+        $err = curl_error($this->ch);
+          
+        if ($err){
+            echo json_encode(['status'=> 'error', 'message' => $err, 'response' => $response]);
+            die();
+        }    
+
+
+        return json_encode(['status'=>'success','data' => json_decode($response)]);
     }
 
-    public function MakePost($url, $data, $headers = ['Content-Type: application/json']) {
-        return $this->executeRequest('POST', $url, $headers, $data);
-    }
-
-    public function MakePut($url, $data, $headers = ['Content-Type: application/json']) {
-        return $this->executeRequest('PUT', $url, $headers, $data);
-    }
-
-    public function MakeDelete($url, $data, $headers = ['Content-Type: application/json']) {
-        return $this->executeRequest('DELETE', $url, $headers, $data);
-    }
-
-    public function MakePatch($url, $data, $headers = ['Content-Type: application/json']) {
-        return $this->executeRequest('PATCH', $url, $headers, $data);
-    }
-
-    public function MakeOptions($url, $headers = []) {
-        return $this->executeRequest('OPTIONS', $url, $headers);
+    public function __destruct()
+    {
+        curl_close($this->ch);
     }
 }

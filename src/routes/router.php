@@ -1,6 +1,4 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
-
 require(__DIR__ . '/../../vendor/autoload.php');
 
 use Pecee\SimpleRouter\SimpleRouter as Router;
@@ -11,6 +9,9 @@ Router::get('/', function() {
     return json_encode(['status' => 'success', 'message' => 'Hello World!']);
 });
 
+Router::get('/favicon.ico', function() {
+    return null; // alterar pra um favicon válido ou deixar
+});
 
 
 Router::start();
