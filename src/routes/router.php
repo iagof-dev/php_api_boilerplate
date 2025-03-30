@@ -9,6 +9,10 @@ Router::get('/', function() {
     return json_encode(['status' => 'success', 'message' => 'Hello World!']);
 });
 
+Router::get('/test', function() {
+    return json_encode(['status' => 'success', 'message' => 'OMG! Another route, how is this possible?']);
+});
+
 Router::get('/favicon.ico', function() {
     return null; // alterar pra um favicon válido ou deixar
 });
