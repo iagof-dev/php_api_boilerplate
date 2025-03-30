@@ -10,7 +10,7 @@ Router::get('/', function() {
 });
 
 Router::get('/test', function() {
-    return json_encode(['status' => 'success', 'message' => 'OMG! Another route, how is this possible?']);
+    return json_encode(['status' => 'success', 'message' => 'OMG! Another route? How is this possible?']);
 });
 
 Router::get('/favicon.ico', function() {
